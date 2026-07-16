@@ -1,0 +1,535 @@
+{
+    "total_intrusions": 21,
+    "last_breach": "17:38:52",
+    "alerts_sent": 21,
+    "logs": [
+        {
+            "id": "#79",
+            "person_id": "Person_79",
+            "photo": "/captures/ID79_173852.jpg",
+            "shirt": "<div style='display:flex;align-items:center;gap:6px;'><div style='width:18px;height:18px;background-color:#322e0c;border-radius:50%;border:1px solid #fff;'></div><b style='color:#fff;text-shadow:0 0 2px #000;'>Black</b></div>",
+            "pant": "<div style='display:flex;align-items:center;gap:6px;'><div style='width:18px;height:18px;background-color:#495240;border-radius:50%;border:1px solid #fff;'></div><b style='color:#fff;text-shadow:0 0 2px #000;'>Gray</b></div>",
+            "shirt_name": "Black",
+            "pant_name": "Gray",
+            "time_in": "2026-01-12 17:38:52",
+            "timestamp": "2026-01-12 17:38:52",
+            "time_out": "--:--:--",
+            "out_time": "--:--:--"
+        },
+        {
+            "id": "#76",
+            "person_id": "Person_76",
+            "photo": "/captures/ID76_173828.jpg",
+            "shirt": "<div style='display:flex;align-items:center;gap:6px;'><div style='width:18px;height:18px;background-color:#877603;border-radius:50%;border:1px solid #fff;'></div><b style='color:#fff;text-shadow:0 0 2px #000;'>Brown</b></div>",
+            "pant": "<div style='display:flex;align-items:center;gap:6px;'><div style='width:18px;height:18px;background-color:#26231d;border-radius:50%;border:1px solid #fff;'></div><b style='color:#fff;text-shadow:0 0 2px #000;'>Black</b></div>",
+            "shirt_name": "Brown",
+            "pant_name": "Black",
+            "time_in": "2026-01-12 17:38:28",
+            "timestamp": "2026-01-12 17:38:28",
+            "time_out": "17:38:32",
+            "out_time": "17:38:32"
+        },
+        {
+            "id": "#63",
+            "person_id": "Person_63",
+            "photo": "/captures/ID63_173749.jpg",
+            "shirt": "<div style='display:flex;align-items:center;gap:6px;'><div style='width:18px;height:18px;background-color:#6b5e0c;border-radius:50%;border:1px solid #fff;'></div><b style='color:#fff;text-shadow:0 0 2px #000;'>Brown</b></div>",
+            "pant": "<div style='display:flex;align-items:center;gap:6px;'><div style='width:18px;height:18px;background-color:#3a362f;border-radius:50%;border:1px solid #fff;'></div><b style='color:#fff;text-shadow:0 0 2px #000;'>Black</b></div>",
+            "shirt_name": "Brown",
+            "pant_name": "Black",
+            "time_in": "2026-01-12 17:37:49",
+            "timestamp": "2026-01-12 17:37:49",
+            "time_out": "17:37:52",
+            "out_time": "17:37:52"
+        },
+        {
+            "id": "#36",
+            "person_id": "Person_36",
+            "photo": "/captures/ID36_173424.jpg",
+            "shirt": "<div style='display:flex;align-items:center;gap:6px;'><div style='width:18px;height:18px;background-color:#28210b;border-radius:50%;border:1px solid #fff;'></div><b style='color:#fff;text-shadow:0 0 2px #000;'>Black</b></div>",
+            "pant": "<div style='display:flex;align-items:center;gap:6px;'><div style='width:18px;height:18px;background-color:#35361b;border-radius:50%;border:1px solid #fff;'></div><b style='color:#fff;text-shadow:0 0 2px #000;'>Black</b></div>",
+            "shirt_name": "Black",
+            "pant_name": "Black",
+            "time_in": "2026-01-12 17:34:24",
+            "timestamp": "2026-01-12 17:34:24",
+            "time_out": "17:34:27",
+            "out_time": "17:34:27"
+        },
+        {
+            "id": "#31",
+            "person_id": "Person_31",
+            "photo": "/captures/ID31_173337.jpg",
+            "shirt": "<div style='display:flex;align-items:center;gap:6px;'><div style='width:18px;height:18px;background-color:#2d2511;border-radius:50%;border:1px solid #fff;'></div><b style='color:#fff;text-shadow:0 0 2px #000;'>Black</b></div>",
+            "pant": "<div style='display:flex;align-items:center;gap:6px;'><div style='width:18px;height:18px;background-color:#615615;border-radius:50%;border:1px solid #fff;'></div><b style='color:#fff;text-shadow:0 0 2px #000;'>Brown</b></div>",
+            "shirt_name": "Black",
+            "pant_name": "Brown",
+            "time_in": "2026-01-12 17:33:37",
+            "timestamp": "2026-01-12 17:33:37",
+            "time_out": "17:33:42",
+            "out_time": "17:33:42"
+        },
+        {
+            "id": "#27",
+            "person_id": "Person_27",
+            "photo": "/captures/ID27_173321.jpg",
+            "shirt": "<div style='display:flex;align-items:center;gap:6px;'><div style='width:18px;height:18px;background-color:#786704;border-radius:50%;border:1px solid #fff;'></div><b style='color:#fff;text-shadow:0 0 2px #000;'>Brown</b></div>",
+            "pant": "<div style='display:flex;align-items:center;gap:6px;'><div style='width:18px;height:18px;background-color:#2a302b;border-radius:50%;border:1px solid #fff;'></div><b style='color:#fff;text-shadow:0 0 2px #000;'>Black</b></div>",
+            "shirt_name": "Brown",
+            "pant_name": "Black",
+            "time_in": "2026-01-12 17:33:21",
+            "timestamp": "2026-01-12 17:33:21",
+            "time_out": "17:33:26",
+            "out_time": "17:33:26"
+        },
+        {
+            "id": "#26",
+            "person_id": "Person_26",
+            "photo": "/captures/ID26_173318.jpg",
+            "shirt": "<div style='display:flex;align-items:center;gap:6px;'><div style='width:18px;height:18px;background-color:#444217;border-radius:50%;border:1px solid #fff;'></div><b style='color:#fff;text-shadow:0 0 2px #000;'>Black</b></div>",
+            "pant": "<div style='display:flex;align-items:center;gap:6px;'><div style='width:18px;height:18px;background-color:#5c5f37;border-radius:50%;border:1px solid #fff;'></div><b style='color:#fff;text-shadow:0 0 2px #000;'>Gray</b></div>",
+            "shirt_name": "Black",
+            "pant_name": "Gray",
+            "time_in": "2026-01-12 17:33:18",
+            "timestamp": "2026-01-12 17:33:18",
+            "time_out": "17:33:22",
+            "out_time": "17:33:22"
+        },
+        {
+            "id": "#12",
+            "person_id": "Person_12",
+            "photo": "/captures/ID12_173157.jpg",
+            "shirt": "<div style='display:flex;align-items:center;gap:6px;'><div style='width:18px;height:18px;background-color:#1c201e;border-radius:50%;border:1px solid #fff;'></div><b style='color:#fff;text-shadow:0 0 2px #000;'>Black</b></div>",
+            "pant": "<div style='display:flex;align-items:center;gap:6px;'><div style='width:18px;height:18px;background-color:#483e15;border-radius:50%;border:1px solid #fff;'></div><b style='color:#fff;text-shadow:0 0 2px #000;'>Black</b></div>",
+            "shirt_name": "Black",
+            "pant_name": "Black",
+            "time_in": "2026-01-12 17:31:57",
+            "timestamp": "2026-01-12 17:31:57",
+            "time_out": "17:32:07",
+            "out_time": "17:32:07"
+        },
+        {
+            "id": "#11",
+            "person_id": "Person_11",
+            "photo": "/captures/ID11_173141.jpg",
+            "shirt": "<div style='display:flex;align-items:center;gap:6px;'><div style='width:18px;height:18px;background-color:#2b312f;border-radius:50%;border:1px solid #fff;'></div><b style='color:#fff;text-shadow:0 0 2px #000;'>Black</b></div>",
+            "pant": "<div style='display:flex;align-items:center;gap:6px;'><div style='width:18px;height:18px;background-color:#282517;border-radius:50%;border:1px solid #fff;'></div><b style='color:#fff;text-shadow:0 0 2px #000;'>Black</b></div>",
+            "shirt_name": "Black",
+            "pant_name": "Black",
+            "time_in": "2026-01-12 17:31:41",
+            "timestamp": "2026-01-12 17:31:41",
+            "time_out": "17:31:51",
+            "out_time": "17:31:51"
+        },
+        {
+            "id": "#6",
+            "person_id": "Person_6",
+            "photo": "/captures/ID6_173056.jpg",
+            "shirt": "<div style='display:flex;align-items:center;gap:6px;'><div style='width:18px;height:18px;background-color:#50440b;border-radius:50%;border:1px solid #fff;'></div><b style='color:#fff;text-shadow:0 0 2px #000;'>Brown</b></div>",
+            "pant": "<div style='display:flex;align-items:center;gap:6px;'><div style='width:18px;height:18px;background-color:#6d5c08;border-radius:50%;border:1px solid #fff;'></div><b style='color:#fff;text-shadow:0 0 2px #000;'>Brown</b></div>",
+            "shirt_name": "Brown",
+            "pant_name": "Brown",
+            "time_in": "2026-01-12 17:30:56",
+            "timestamp": "2026-01-12 17:30:56",
+            "time_out": "17:31:00",
+            "out_time": "17:31:00"
+        },
+        {
+            "id": "#5",
+            "person_id": "Person_5",
+            "photo": "/captures/ID5_173055.jpg",
+            "shirt": "<div style='display:flex;align-items:center;gap:6px;'><div style='width:18px;height:18px;background-color:#211d0d;border-radius:50%;border:1px solid #fff;'></div><b style='color:#fff;text-shadow:0 0 2px #000;'>Black</b></div>",
+            "pant": "<div style='display:flex;align-items:center;gap:6px;'><div style='width:18px;height:18px;background-color:#604a01;border-radius:50%;border:1px solid #fff;'></div><b style='color:#fff;text-shadow:0 0 2px #000;'>Brown</b></div>",
+            "shirt_name": "Black",
+            "pant_name": "Brown",
+            "time_in": "2026-01-12 17:30:55",
+            "timestamp": "2026-01-12 17:30:55",
+            "time_out": "17:30:58",
+            "out_time": "17:30:58"
+        },
+        {
+            "id": "#11",
+            "person_id": "Person_11",
+            "photo": "/captures/ID11_164711.jpg",
+            "shirt": "<div style='display:flex;align-items:center;gap:6px;'><div style='width:18px;height:18px;background-color:#772041;border-radius:50%;border:1px solid #fff;'></div><b style='color:#fff;text-shadow:0 0 2px #000;'>Brown</b></div>",
+            "pant": "<div style='display:flex;align-items:center;gap:6px;'><div style='width:18px;height:18px;background-color:#4f4c5b;border-radius:50%;border:1px solid #fff;'></div><b style='color:#fff;text-shadow:0 0 2px #000;'>Gray</b></div>",
+            "shirt_name": "Brown",
+            "pant_name": "Gray",
+            "time_in": "2026-01-12 16:47:11",
+            "timestamp": "2026-01-12 16:47:11",
+            "time_out": "--:--:--",
+            "out_time": "--:--:--"
+        },
+        {
+            "id": "#9",
+            "person_id": "Person_9",
+            "photo": "/captures/ID9_164508.jpg",
+            "shirt": "<div style='display:flex;align-items:center;gap:6px;'><div style='width:18px;height:18px;background-color:#2a2c23;border-radius:50%;border:1px solid #fff;'></div><b style='color:#fff;text-shadow:0 0 2px #000;'>Black</b></div>",
+            "pant": "<div style='display:flex;align-items:center;gap:6px;'><div style='width:18px;height:18px;background-color:#20211b;border-radius:50%;border:1px solid #fff;'></div><b style='color:#fff;text-shadow:0 0 2px #000;'>Black</b></div>",
+            "shirt_name": "Black",
+            "pant_name": "Black",
+            "time_in": "2026-01-12 16:45:08",
+            "timestamp": "2026-01-12 16:45:08",
+            "time_out": "16:45:11",
+            "out_time": "16:45:11"
+        },
+        {
+            "id": "#4",
+            "person_id": "Person_4",
+            "photo": "/captures/ID4_152838.jpg",
+            "shirt": "<div style='display:flex;align-items:center;gap:6px;'><div style='width:18px;height:18px;background-color:#3e3f40;border-radius:50%;border:1px solid #fff;'></div><b style='color:#fff;text-shadow:0 0 2px #000;'>Brown</b></div>",
+            "pant": "<div style='display:flex;align-items:center;gap:6px;'><div style='width:18px;height:18px;background-color:#808b8d;border-radius:50%;border:1px solid #fff;'></div><b style='color:#fff;text-shadow:0 0 2px #000;'>Gray</b></div>",
+            "shirt_name": "Brown",
+            "pant_name": "Gray",
+            "time_in": "2026-01-12 15:28:38",
+            "timestamp": "2026-01-12 15:28:38",
+            "time_out": "--:--:--",
+            "out_time": "--:--:--"
+        },
+        {
+            "id": "#22",
+            "person_id": "Person_22",
+            "photo": "/captures/ID22_152443.jpg",
+            "shirt": "<div style='display:flex;align-items:center;gap:6px;'><div style='width:18px;height:18px;background-color:#80543f;border-radius:50%;border:1px solid #fff;'></div><b style='color:#fff;text-shadow:0 0 2px #000;'>Brown</b></div>",
+            "pant": "<div style='display:flex;align-items:center;gap:6px;'><div style='width:18px;height:18px;background-color:#321b28;border-radius:50%;border:1px solid #fff;'></div><b style='color:#fff;text-shadow:0 0 2px #000;'>Black</b></div>",
+            "shirt_name": "Brown",
+            "pant_name": "Black",
+            "time_in": "2026-01-12 15:24:43",
+            "timestamp": "2026-01-12 15:24:43",
+            "time_out": "--:--:--",
+            "out_time": "--:--:--"
+        },
+        {
+            "id": "#18",
+            "person_id": "Person_18",
+            "photo": "/captures/ID18_151551.jpg",
+            "shirt": "<div style='display:flex;align-items:center;gap:6px;'><div style='width:18px;height:18px;background-color:#222119;border-radius:50%;border:1px solid #fff;'></div><b style='color:#fff;text-shadow:0 0 2px #000;'>Black</b></div>",
+            "pant": "<div style='display:flex;align-items:center;gap:6px;'><div style='width:18px;height:18px;background-color:#212723;border-radius:50%;border:1px solid #fff;'></div><b style='color:#fff;text-shadow:0 0 2px #000;'>Black</b></div>",
+            "shirt_name": "Black",
+            "pant_name": "Black",
+            "time_in": "2026-01-12 15:15:51",
+            "timestamp": "2026-01-12 15:15:51",
+            "time_out": "15:15:41",
+            "out_time": "15:15:41"
+        },
+        {
+            "id": "#17",
+            "person_id": "Person_17",
+            "photo": "/captures/ID17_151535.jpg",
+            "shirt": "<div style='display:flex;align-items:center;gap:6px;'><div style='width:18px;height:18px;background-color:#1d1e18;border-radius:50%;border:1px solid #fff;'></div><b style='color:#fff;text-shadow:0 0 2px #000;'>Black</b></div>",
+            "pant": "<div style='display:flex;align-items:center;gap:6px;'><div style='width:18px;height:18px;background-color:#181e1d;border-radius:50%;border:1px solid #fff;'></div><b style='color:#fff;text-shadow:0 0 2px #000;'>Black</b></div>",
+            "shirt_name": "Black",
+            "pant_name": "Black",
+            "time_in": "2026-01-12 15:15:35",
+            "timestamp": "2026-01-12 15:15:35",
+            "time_out": "15:15:38",
+            "out_time": "15:15:38"
+        },
+        {
+            "id": "#9",
+            "person_id": "Person_9",
+            "photo": "/captures/ID9_145601.jpg",
+            "shirt": "<div style='display:flex;align-items:center;gap:6px;'><div style='width:18px;height:18px;background-color:#121412;border-radius:50%;border:1px solid #fff;'></div><b style='color:#fff;text-shadow:0 0 2px #000;'>Black</b></div>",
+            "pant": "<div style='display:flex;align-items:center;gap:6px;'><div style='width:18px;height:18px;background-color:#13191d;border-radius:50%;border:1px solid #fff;'></div><b style='color:#fff;text-shadow:0 0 2px #000;'>Black</b></div>",
+            "shirt_name": "Black",
+            "pant_name": "Black",
+            "time_in": "2026-01-12 14:56:01",
+            "timestamp": "2026-01-12 14:56:01",
+            "time_out": "14:56:09",
+            "out_time": "14:56:09"
+        },
+        {
+            "id": "#10",
+            "person_id": "Person_10",
+            "photo": "/captures/ID10_144520.jpg",
+            "shirt": "<div style='display:flex;align-items:center;gap:6px;'><div style='width:18px;height:18px;background-color:#d6b11a;border-radius:50%;border:1px solid #fff;'></div><b style='color:#fff;text-shadow:0 0 2px #000;'>Orange</b></div>",
+            "pant": "<div style='display:flex;align-items:center;gap:6px;'><div style='width:18px;height:18px;background-color:#544214;border-radius:50%;border:1px solid #fff;'></div><b style='color:#fff;text-shadow:0 0 2px #000;'>Brown</b></div>",
+            "shirt_name": "Orange",
+            "pant_name": "Brown",
+            "time_in": "2026-01-12 14:45:20",
+            "timestamp": "2026-01-12 14:45:20",
+            "time_out": "--:--:--",
+            "out_time": "--:--:--"
+        },
+        {
+            "id": "#34",
+            "person_id": "Person_34",
+            "photo": "/captures/ID34_144026.jpg",
+            "shirt": "<div style='display:flex;align-items:center;gap:6px;'><div style='width:18px;height:18px;background-color:#201d14;border-radius:50%;border:1px solid #fff;'></div><b style='color:#fff;text-shadow:0 0 2px #000;'>Black</b></div>",
+            "pant": "<div style='display:flex;align-items:center;gap:6px;'><div style='width:18px;height:18px;background-color:#181a17;border-radius:50%;border:1px solid #fff;'></div><b style='color:#fff;text-shadow:0 0 2px #000;'>Black</b></div>",
+            "shirt_name": "Black",
+            "pant_name": "Black",
+            "time_in": "2026-01-12 14:40:26",
+            "timestamp": "2026-01-12 14:40:26",
+            "time_out": "--:--:--",
+            "out_time": "--:--:--"
+        }
+    ],
+    "zone_history": [
+        {
+            "timestamp": "2026-01-12 17:37:35",
+            "image": "/static/zone_snapshot_20260112_173735.jpg",
+            "coordinates": [
+                [
+                    7,
+                    3
+                ],
+                [
+                    10,
+                    472
+                ],
+                [
+                    639,
+                    472
+                ],
+                [
+                    638,
+                    11
+                ],
+                [
+                    10,
+                    5
+                ]
+            ]
+        },
+        {
+            "timestamp": "2026-01-12 17:35:01",
+            "image": "/static/zone_snapshot_20260112_173501.jpg",
+            "coordinates": [
+                [
+                    47,
+                    17
+                ],
+                [
+                    568,
+                    21
+                ],
+                [
+                    550,
+                    150
+                ],
+                [
+                    42,
+                    147
+                ],
+                [
+                    40,
+                    17
+                ]
+            ]
+        },
+        {
+            "timestamp": "2026-01-12 17:34:01",
+            "image": "/static/zone_snapshot_20260112_173401.jpg",
+            "coordinates": [
+                [
+                    428,
+                    366
+                ],
+                [
+                    531,
+                    361
+                ],
+                [
+                    529,
+                    469
+                ],
+                [
+                    429,
+                    461
+                ],
+                [
+                    422,
+                    360
+                ]
+            ]
+        },
+        {
+            "timestamp": "2026-01-12 17:32:25",
+            "image": "/static/zone_snapshot_20260112_173225.jpg",
+            "coordinates": [
+                [
+                    239,
+                    219
+                ],
+                [
+                    232,
+                    473
+                ],
+                [
+                    496,
+                    474
+                ],
+                [
+                    508,
+                    241
+                ],
+                [
+                    240,
+                    214
+                ]
+            ]
+        },
+        {
+            "timestamp": "2026-01-12 17:31:31",
+            "image": "/static/zone_snapshot_20260112_173131.jpg",
+            "coordinates": [
+                [
+                    348,
+                    6
+                ],
+                [
+                    302,
+                    474
+                ],
+                [
+                    636,
+                    477
+                ],
+                [
+                    639,
+                    11
+                ],
+                [
+                    349,
+                    0
+                ]
+            ]
+        },
+        {
+            "timestamp": "2026-01-12 17:18:27",
+            "image": "/static/zone_snapshot_20260112_171827.jpg",
+            "coordinates": [
+                [
+                    5,
+                    472
+                ],
+                [
+                    296,
+                    476
+                ],
+                [
+                    305,
+                    70
+                ],
+                [
+                    4,
+                    62
+                ],
+                [
+                    3,
+                    470
+                ]
+            ]
+        },
+        {
+            "timestamp": "2026-01-12 17:15:08",
+            "image": "/static/zone_snapshot_20260112_171508.jpg",
+            "coordinates": [
+                [
+                    31,
+                    89
+                ],
+                [
+                    23,
+                    447
+                ],
+                [
+                    616,
+                    457
+                ],
+                [
+                    612,
+                    110
+                ],
+                [
+                    35,
+                    82
+                ]
+            ]
+        },
+        {
+            "timestamp": "2026-01-12 14:36:50",
+            "image": "/static/zone_snapshot_20260112_143650.jpg",
+            "coordinates": [
+                [
+                    4,
+                    475
+                ],
+                [
+                    7,
+                    13
+                ],
+                [
+                    631,
+                    6
+                ],
+                [
+                    634,
+                    476
+                ],
+                [
+                    4,
+                    476
+                ]
+            ]
+        },
+        {
+            "timestamp": "2026-01-12 14:35:25",
+            "image": "/static/zone_snapshot_20260112_143525.jpg",
+            "coordinates": [
+                [
+                    12,
+                    220
+                ],
+                [
+                    12,
+                    475
+                ],
+                [
+                    633,
+                    465
+                ],
+                [
+                    633,
+                    268
+                ],
+                [
+                    13,
+                    213
+                ]
+            ]
+        },
+        {
+            "timestamp": "2026-01-12 14:34:13",
+            "image": "/static/zone_snapshot_20260112_143413.jpg",
+            "coordinates": [
+                [
+                    4,
+                    67
+                ],
+                [
+                    638,
+                    78
+                ],
+                [
+                    633,
+                    470
+                ],
+                [
+                    11,
+                    471
+                ],
+                [
+                    2,
+                    65
+                ]
+            ]
+        }
+    ],
+    "current_snapshot_url": "http://192.168.88.62:5000/static/zone_snapshot_20260112_173735.jpg",
+    "current_snapshot_b64": "data:image/jpeg;base64,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",
+    "fps": 19.3,
+    "uptime": "3:05:14",
+    "system_start": 1768210416.811212,
+    "zone_active": true
+}

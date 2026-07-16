@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Intrusion Detection System</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg-dark: #0f172a;
+            --card-bg: #1e293b;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent-red: #ef4444;
+            --accent-green: #10b981;
+            --accent-blue: #3b82f6;
+            --border-color: #334155;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            padding: 2rem;
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 1rem;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        .btn {
+            border: 1px solid var(--border-color);
+            background: transparent;
+            color: var(--text-main);
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .btn:hover {
+            background-color: var(--border-color);
+        }
+
+        .btn-primary {
+            background: var(--accent-blue);
+            border: none;
+        }
+
+        .btn-success {
+            background: var(--accent-green);
+            border: none;
+        }
+
+        .btn-danger {
+            background: var(--accent-red);
+            border: none;
+        }
+
+        /* Metrics */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+        }
+
+        .card-title {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 0.75rem;
+            font-weight: 600;
+        }
+
+        .card-value {
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        .subtext {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+            margin-top: 0.5rem;
+        }
+
+        /* Video Feed */
+        .video-wrapper {
+            background-color: var(--card-bg);
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .video-container {
+            position: relative;
+            display: inline-block;
+            max-width: 100%;
+        }
+
+        .video-feed {
+            width: 100%;
+            max-width: 800px;
+            height: auto;
+            border-radius: 4px;
+            border: 2px solid var(--border-color);
+        }
+
+        #draw-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            cursor: crosshair;
+        }
+
+        /* Search */
+        .search-container {
+            margin-bottom: 1rem;
+        }
+
+        input[type="text"] {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            width: 300px;
+        }
+
+        /* Table */
+        .table-container {
+            background-color: var(--card-bg);
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            text-align: left;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        td {
+            padding: 1rem 0;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 0.875rem;
+        }
+
+        .thumb {
+            width: 80px;
+            height: 45px;
+            border-radius: 4px;
+            object-fit: cover;
+            cursor: pointer;
+        }
+
+        .badge {
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .badge-red {
+            background: rgba(239, 68, 68, 0.2);
+            color: var(--accent-red);
+        }
+
+        .badge-green {
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--accent-green);
+        }
+
+        /* Pagination */
+        .pagination {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .pagination-info {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .pagination-btns {
+            display: flex;
+            gap: 10px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="header">
+        <h1>Intrusion Detection System</h1>
+        <button class="btn" onclick="exportPDF()">Download Report</button>
+    </div>
+
+    <!-- Live Monitor -->
+    <div class="video-wrapper">
+        <div class="video-container">
+            <img id="live-feed" class="video-feed" src="/video_feed" alt="Live Feed">
+            <canvas id="draw-canvas" style="display:none;"></canvas>
+        </div>
+
+        <div style="margin-top:1rem; display:flex; gap:10px; justify-content:center; flex-wrap:wrap;">
+            <button id="btn-draw" class="btn btn-primary">Draw Zone</button>
+            <button id="btn-save" class="btn btn-success" style="display:none;">Save Zone</button>
+            <button id="btn-clear" class="btn btn-danger" style="display:none;">Clear</button>
+            <button id="btn-toggle" onclick="sendCommand('toggle_zone')" class="btn btn-primary">ZONE ACTIVE /
+                INACTIVE</button>
+            <button onclick="sendCommand('r')" class="btn">Reset (Keep Data)</button>
+        </div>
+    </div>
+
+    <div class="metrics-grid">
+        <div class="card">
+            <div class="card-title">Intrusions</div>
+            <div class="card-value" id="stat-total" style="color:var(--accent-red)">0</div>
+            <div class="subtext">Alerts: <span id="stat-alerts">0</span></div>
+        </div>
+        <div class="card">
+            <div class="card-title">Performance</div>
+            <div class="card-value"><span id="stat-fps">0.0</span> <small style="font-size:1rem">FPS</small></div>
+            <div class="subtext">System Health: Normal</div>
+        </div>
+        <div class="card">
+            <div class="card-title">Uptime</div>
+            <div class="card-value" id="stat-uptime" style="font-size:1.5rem">00:00:00</div>
+            <div class="subtext">Started: Live</div>
+        </div>
+        <div class="card">
+            <div class="card-title">Zone Status</div>
+            <div class="card-value" id="zone-status" style="font-size:1.2rem;">ACTIVE</div>
+            <div class="subtext" id="zone-subtext">Monitoring Zone</div>
+        </div>
+    </div>
+
+    <div class="search-container">
+        <input type="text" id="search-input" placeholder="Search by ID or Color..." onkeyup="updateTable()">
+    </div>
+
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Photo</th>
+                    <th>Shirt</th>
+                    <th>Pant</th>
+                    <th>Time In</th>
+                    <th>Time Out</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody id="log-body"></tbody>
+        </table>
+        <div class="pagination">
+            <div class="pagination-info" id="pagination-info">Showing 0 of 0 entries</div>
+            <div class="pagination-btns">
+                <button class="btn" onclick="prevPage()">Previous</button>
+                <span id="page-num" style="padding: 0 10px; font-weight: bold; align-self: center;">1</span>
+                <button class="btn" onclick="nextPage()">Next</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+    <script>
+        let pts = [];
+        const canvas = document.getElementById('draw-canvas');
+        const ctx = canvas.getContext('2d');
+        const img = document.getElementById('live-feed');
+        let currentLogs = [];
+
+        let currentPage = 1;
+        const rowsPerPage = 10;
+
+        function sendCommand(cmd) {
+            fetch(`/api/cmd/${cmd}`).then(r => r.json()).then(d => {
+                if (cmd === 'toggle_zone') {
+                    // Quick feedback
+                    const isArmed = d.status.includes("ARMED");
+                } else {
+                    alert(d.status);
+                }
+            });
+        }
+
+        // Dashboard Data Loop
+        function fetchData() {
+            fetch('/api/data?t=' + Date.now())
+                .then(r => r.json())
+                .then(data => {
+                    document.getElementById('stat-total').innerText = data.total_intrusions || 0;
+                    document.getElementById('stat-alerts').innerText = data.alerts_sent || 0;
+                    document.getElementById('stat-fps').innerText = data.fps || '0.0';
+                    document.getElementById('stat-uptime').innerText = data.uptime || '00:00:00';
+
+                    const zoneStatus = document.getElementById('zone-status');
+                    const zoneSubtext = document.getElementById('zone-subtext');
+                    const btnToggle = document.getElementById('btn-toggle');
+
+                    if (data.zone_active) {
+                        zoneStatus.innerText = "ACTIVE";
+                        zoneStatus.style.color = "var(--accent-green)";
+                        zoneSubtext.innerText = "Monitoring Enabled";
+                        btnToggle.style.background = "var(--accent-red)";
+                        btnToggle.innerText = "DEACTIVATE ZONE";
+                    } else {
+                        zoneStatus.innerText = "INACTIVE";
+                        zoneStatus.style.color = "var(--accent-red)";
+                        zoneSubtext.innerText = "Monitoring Disabled";
+                        btnToggle.style.background = "var(--accent-green)";
+                        btnToggle.innerText = "ACTIVATE ZONE";
+                    }
+
+                    currentLogs = data.logs || [];
+                    updateTable();
+                });
+        }
+        setInterval(fetchData, 2000);
+
+        function updateTable() {
+            const tbody = document.getElementById('log-body');
+            const search = document.getElementById('search-input').value.toLowerCase();
+
+            // 1. Filter
+            const filtered = currentLogs.filter(log => {
+                const rowText = `${log.person_id} ${log.shirt} ${log.pant}`.toLowerCase(); // Corrected from log.shirt_name, log.pant_name
+                return !search || rowText.includes(search);
+            });
+
+            // 2. Paginate
+            const totalPages = Math.ceil(filtered.length / rowsPerPage) || 1;
+            if (currentPage > totalPages) currentPage = totalPages;
+            if (currentPage < 1) currentPage = 1;
+
+            const start = (currentPage - 1) * rowsPerPage;
+            const end = start + rowsPerPage;
+            const paginated = filtered.slice(start, end);
+
+            // 3. UI Updates
+            document.getElementById('page-num').innerText = currentPage;
+            document.getElementById('pagination-info').innerText = `Showing ${paginated.length > 0 ? start + 1 : 0} to ${Math.min(end, filtered.length)} of ${filtered.length} entries`;
+
+            let html = '';
+            paginated.forEach(log => {
+                const statusClass = log.time_out === '--:--:--' ? 'badge-red' : 'badge-green';
+                const statusText = log.time_out === '--:--:--' ? 'INTRUDER' : 'EXITED';
+
+                html += `
+                    <tr>
+                        <td><b>${log.person_id}</b></td>
+                        <td><img src="${log.photo}" class="thumb" onclick="window.open(this.src)"></td>
+                        <td>${log.shirt}</td>
+                        <td>${log.pant}</td>
+                        <td>${log.time_in}</td>
+                        <td>${log.time_out}</td>
+                        <td><span class="badge ${statusClass}">${statusText}</span></td>
+                    </tr>
+                `;
+            });
+            tbody.innerHTML = html;
+        }
+
+        function prevPage() { if (currentPage > 1) { currentPage--; updateTable(); } }
+        function nextPage() {
+            const filteredCount = currentLogs.filter(log => {
+                const search = document.getElementById('search-input').value.toLowerCase();
+                const rowText = `${log.person_id} ${log.shirt} ${log.pant}`.toLowerCase(); // Corrected from log.shirt_name, log.pant_name
+                return !search || rowText.includes(search);
+            }).length;
+            if (currentPage < Math.ceil(filteredCount / rowsPerPage)) {
+                currentPage++;
+                updateTable();
+            }
+        }
+
+        // Drawing Logic
+        const btnDraw = document.getElementById('btn-draw');
+        const btnSave = document.getElementById('btn-save');
+        const btnClear = document.getElementById('btn-clear');
+
+        btnDraw.onclick = () => {
+            canvas.style.display = 'block';
+            canvas.width = img.clientWidth;
+            canvas.height = img.clientHeight;
+            btnDraw.style.display = 'none';
+            btnSave.style.display = 'inline-block';
+            btnClear.style.display = 'inline-block';
+            pts = [];
+            draw();
+        };
+
+        canvas.onclick = (e) => {
+            const rect = canvas.getBoundingClientRect();
+            pts.push({ x: e.clientX - rect.left, y: e.clientY - rect.top });
+            draw();
+        };
+
+        btnClear.onclick = () => { pts = []; draw(); };
+
+        btnSave.onclick = () => {
+            if (pts.length < 3) return alert("Select 3+ points");
+            const scaled = pts.map(p => [
+                Math.round((p.x / canvas.width) * 640),
+                Math.round((p.y / canvas.height) * 480)
+            ]);
+            fetch('/api/save_zone', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ points: scaled })
+            }).then(r => r.json()).then(res => {
+                if (res.success) {
+                    alert("Saved!");
+                    canvas.style.display = 'none';
+                    btnDraw.style.display = 'inline-block';
+                    btnSave.style.display = 'none';
+                    btnClear.style.display = 'none';
+                }
+            });
+        };
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.strokeStyle = '#3b82f6';
+            ctx.lineWidth = 3;
+            if (pts.length > 0) {
+                ctx.beginPath();
+                ctx.moveTo(pts[0].x, pts[0].y);
+                pts.forEach(p => {
+                    ctx.lineTo(p.x, p.y);
+                    ctx.arc(p.x, p.y, 4, 0, Math.PI * 2);
+                    ctx.moveTo(p.x, p.y);
+                });
+                if (pts.length > 2) ctx.closePath();
+                ctx.stroke();
+            }
+        }
+
+        function exportPDF() {
+            const element = document.body;
+            html2pdf().from(element).set({
+                margin: 10,
+                filename: 'security_report.pdf',
+                jsPDF: { orientation: 'landscape' }
+            }).save();
+        }
+    </script>
+</body>
+
+</html>
