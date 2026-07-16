@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI PERSON COUNTING</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --navy: #0a1929;
+            --charcoal: #1a2332;
+            --surface: #1e2a3a;
+            --border: #2d3a4a;
+            --text-primary: #e8eaed;
+            --text-secondary: #9aa0a6;
+            --green: #4caf50;
+            --red: #f44336;
+            --blue: #2196f3;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--navy);
+            color: var(--text-primary);
+            padding: 40px;
+            min-height: 100vh;
+        }
+
+        .header {
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--text-primary);
+            letter-spacing: -0.5px;
+        }
+
+        .cards-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+            margin-bottom: 40px;
+        }
+
+        .card {
+            background: var(--charcoal);
+            border: 1px solid var(--border);
+            border-top: 4px solid var(--border);
+            /* Base top border */
+            border-radius: 12px;
+            padding: 32px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.4);
+        }
+
+        /* Specific card color themes */
+        .card-total-in {
+            border-top-color: var(--green);
+            background: linear-gradient(180deg, rgba(76, 175, 80, 0.05) 0%, var(--charcoal) 100%);
+        }
+
+        .card-total-out {
+            border-top-color: var(--red);
+            background: linear-gradient(180deg, rgba(244, 67, 54, 0.05) 0%, var(--charcoal) 100%);
+        }
+
+        .card-occupancy {
+            border-top-color: var(--blue);
+            background: linear-gradient(180deg, rgba(33, 150, 243, 0.05) 0%, var(--charcoal) 100%);
+        }
+
+
+        .card-label {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 16px;
+        }
+
+        .card-value {
+            font-size: 56px;
+            font-weight: 700;
+            line-height: 1;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .card-total-in .card-value {
+            color: var(--green);
+        }
+
+        .card-total-out .card-value {
+            color: var(--red);
+        }
+
+        .card-occupancy .card-value {
+            color: var(--blue);
+        }
+
+        .table-container {
+            background: var(--charcoal);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: var(--surface);
+        }
+
+        th {
+            text-align: left;
+            padding: 20px 24px;
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        td {
+            padding: 20px 24px;
+            font-size: 14px;
+            color: var(--text-primary);
+            border-bottom: 1px solid var(--border);
+        }
+
+        tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        tbody tr:hover {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 6px 14px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .status-in {
+            background: rgba(76, 175, 80, 0.15);
+            color: var(--green);
+            border: 1px solid rgba(76, 175, 80, 0.3);
+        }
+
+        .status-out {
+            background: rgba(244, 67, 54, 0.15);
+            color: var(--red);
+            border: 1px solid rgba(244, 67, 54, 0.3);
+        }
+
+        .id-cell {
+            font-family: 'Inter', monospace;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .timestamp-cell {
+            color: var(--text-secondary);
+            font-size: 13px;
+        }
+
+        .actions-cell {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            background: transparent;
+            color: var(--text-secondary);
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-edit {
+            color: var(--blue);
+            border-color: rgba(33, 150, 243, 0.3);
+        }
+
+        .btn-edit:hover {
+            background: rgba(33, 150, 243, 0.15);
+            border-color: var(--blue);
+        }
+
+        .btn-delete {
+            color: var(--red);
+            border-color: rgba(244, 67, 54, 0.3);
+        }
+
+        .btn-delete:hover {
+            background: rgba(244, 67, 54, 0.15);
+            border-color: var(--red);
+        }
+
+        /* Pagination Styling */
+        .pagination-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 24px;
+            border-top: 1px solid var(--border);
+            background: var(--charcoal);
+        }
+
+        .pagination-status {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .pagination-btns {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-page {
+            padding: 8px 16px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .btn-page:hover:not(:disabled) {
+            border-color: var(--blue);
+            background: rgba(33, 150, 243, 0.1);
+        }
+
+        .btn-page:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(4px);
+        }
+
+        .modal-content {
+            background-color: var(--charcoal);
+            margin: 15% auto;
+            padding: 32px;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            width: 90%;
+            max-width: 400px;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .modal-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .close {
+            color: var(--text-secondary);
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            line-height: 1;
+        }
+
+        .close:hover {
+            color: var(--text-primary);
+        }
+
+        .modal-body {
+            margin-bottom: 24px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+        .form-select {
+            width: 100%;
+            padding: 12px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: var(--text-primary);
+            font-size: 14px;
+            font-family: 'Inter', sans-serif;
+            cursor: pointer;
+        }
+
+        .form-select:focus {
+            outline: none;
+            border-color: var(--blue);
+        }
+
+        .modal-footer {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+        }
+
+        .btn-primary {
+            background: var(--blue);
+            color: white;
+            border-color: var(--blue);
+        }
+
+        .btn-primary:hover {
+            background: rgba(33, 150, 243, 0.8);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--text-secondary);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .row-deleted {
+            display: none !important;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="header" style="display: flex; justify-content: space-between; align-items: center;">
+        <h1>AI PERSON COUNTING</h1>
+        <button class="btn btn-primary" onclick="downloadPDF()" style="padding: 10px 20px;">Download Report</button>
+    </div>
+
+    <div class="cards-container">
+        <div class="card card-total-in">
+            <div class="card-label">Total In</div>
+            <div class="card-value" id="totalIn">0</div>
+        </div>
+        <div class="card card-total-out">
+            <div class="card-label">Total Out</div>
+            <div class="card-value" id="totalOut">0</div>
+        </div>
+        <div class="card card-occupancy">
+            <div class="card-label">Net Inside</div>
+            <div class="card-value" id="netInside">0</div>
+        </div>
+    </div>
+
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Status (In/Out)</th>
+                    <th>Timestamp (Date/Time)</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody"></tbody>
+        </table>
+
+        <div class="pagination-footer">
+            <div class="pagination-status" id="paginationStatus">Showing 0 to 0 of 0 entries</div>
+            <div class="pagination-btns">
+                <button class="btn-page" id="prevBtn" onclick="changePage(-1)">Previous</button>
+                <button class="btn-page" id="nextBtn" onclick="changePage(1)">Next</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Modal -->
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">Edit Entry</div>
+                <span class="close" onclick="closeModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">Status</label>
+                    <select id="statusSelect" class="form-select">
+                        <option value="IN">IN</option>
+                        <option value="OUT">OUT</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                <button class="btn btn-primary" onclick="saveEdit()">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let dataLogs = [];
+        let currentPage = 1;
+        const rowsPerPage = 10;
+        let currentEditId = null;
+
+        async function fetchData() {
+            try {
+                const response = await fetch('/data');
+                const data = await response.json();
+
+                // Update stats
+                document.getElementById('totalIn').textContent = data.in;
+                document.getElementById('totalOut').textContent = data.out;
+                document.getElementById('netInside').textContent = data.net_inside;
+
+                dataLogs = data.history;
+                renderTable();
+            } catch (e) {
+                console.error("Data fetch failed", e);
+            }
+        }
+
+        function renderTable() {
+            const tableBody = document.getElementById('tableBody');
+            const totalItems = dataLogs.length;
+            const totalPages = Math.ceil(totalItems / rowsPerPage) || 1;
+
+            if (currentPage > totalPages) currentPage = totalPages;
+            if (currentPage < 1) currentPage = 1;
+
+            const start = (currentPage - 1) * rowsPerPage;
+            const end = Math.min(start + rowsPerPage, totalItems);
+            const pagedItems = dataLogs.slice(start, end);
+
+            tableBody.innerHTML = '';
+
+            pagedItems.forEach(item => {
+                const row = document.createElement('tr');
+                row.setAttribute('data-id', item.id);
+                const statusClass = item.status === 'IN' ? 'status-in' : 'status-out';
+
+                row.innerHTML = `
+                    <td class="id-cell">#${item.id}</td>
+                    <td><span class="status-badge ${statusClass}">${item.status}</span></td>
+                    <td class="timestamp-cell">${item.time}</td>
+                    <td class="actions-cell">
+                        <button class="btn btn-edit" onclick="editRow('${item.id}')">Edit</button>
+                        <button class="btn btn-delete" onclick="deleteRow('${item.id}')">Delete</button>
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            });
+
+            // Update Pagination UI
+            document.getElementById('paginationStatus').textContent =
+                totalItems > 0 ? `Showing ${start + 1} to ${end} of ${totalItems} entries` : 'Showing 0 to 0 of 0 entries';
+
+            document.getElementById('prevBtn').disabled = currentPage === 1;
+            document.getElementById('nextBtn').disabled = currentPage === totalPages;
+        }
+
+        function changePage(delta) {
+            currentPage += delta;
+            renderTable();
+        }
+
+        function downloadPDF() {
+            const element = document.querySelector('body');
+            const btns = document.querySelectorAll('.btn, .btn-page');
+
+            // Hide buttons briefly
+            btns.forEach(b => b.style.display = 'none');
+
+            const opt = {
+                margin: 0,
+                filename: 'Person_Counting_Report.pdf',
+                image: { type: 'jpeg', quality: 1 },
+                html2canvas: { scale: 2, backgroundColor: '#0a1929' },
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' }
+            };
+
+            html2pdf().set(opt).from(element).save().then(() => {
+                btns.forEach(b => {
+                    if (b.classList.contains('actions-cell') || b.parentElement.classList.contains('actions-cell')) {
+                        b.style.display = 'inline-block';
+                    } else if (b.classList.contains('btn-page')) {
+                        b.style.display = 'block';
+                    } else {
+                        b.style.display = 'block';
+                    }
+                });
+                // Simple refresh of visibility
+                location.reload();
+            });
+        }
+
+        function editRow(id) {
+            currentEditId = id;
+            const item = dataLogs.find(l => l.id == id);
+            if (!item) return;
+
+            document.getElementById('statusSelect').value = item.status;
+            document.getElementById('editModal').style.display = 'block';
+        }
+
+        function closeModal() {
+            document.getElementById('editModal').style.display = 'none';
+        }
+
+        async function saveEdit() {
+            if (!currentEditId) return;
+            const newStatus = document.getElementById('statusSelect').value;
+
+            try {
+                const response = await fetch('/edit', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id: currentEditId, status: newStatus })
+                });
+                if (response.ok) {
+                    await fetchData(); // Refresh everything
+                    closeModal();
+                }
+            } catch (e) {
+                console.error("Edit failed", e);
+            }
+        }
+
+        async function deleteRow(id) {
+            if (confirm('Delete this entry?')) {
+                try {
+                    const response = await fetch('/delete', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ id: id })
+                    });
+                    if (response.ok) fetchData();
+                } catch (e) {
+                    console.error("Delete failed", e);
+                }
+            }
+        }
+
+        window.onclick = function (event) {
+            if (event.target == document.getElementById('editModal')) closeModal();
+        }
+
+        // Poll for real data
+        setInterval(fetchData, 1000);
+        fetchData();
+    </script>
+</body>
+
+</html>
