@@ -1,0 +1,13 @@
+train: ../train/images
+val: ../valid/images
+test: ../test/images
+
+nc: 1
+names: ['person']
+
+roboflow:
+  workspace: topview
+  project: mixes
+  version: 4
+  license: BY-NC-SA 4.0
+  url: https://universe.roboflow.com/topview/mixes/dataset/4

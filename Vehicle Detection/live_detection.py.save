@@ -1,0 +1,372 @@
+PLATE_MODEL   = "models/plate_pk_strong.onnx"  # replace with the ONNX you copied
+IMG_SIZE      = 320                            # must match ONNX export
+# Camera resolution — lower = faster. 640x480 is good balance.
+CAM_WIDTH, CAM_HEIGHT = 640, 480
+
+DETECTION_CONF_VEH = 0.40   # higher -> fewer false boxes for vehicles
+DETECTION_CONF_PLT = 0.30   # plate needs to be seen, allow slightly lower
+MAX_BOXES_DRAW     = 6      # draw only top-N vehicle boxes per frame
+
+# Heuristic vehicle box acceptance: area and aspect ratio ranges
+MIN_VEH_AREA = 80 * 40     # min px area (w * h)
+MAX_VEH_AREA = CAM_WIDTH * CAM_HEIGHT
+MIN_VEH_AR = 1.0           # width/height
+MAX_VEH_AR = 4.5
+
+# Tracking / report
+REPORTS_ROOT = "reports"
+os.makedirs(REPORTS_ROOT, exist_ok=True)
+THUMB_HEIGHT = 90
+
+# OCR engine availability
+FAST_OCR = False
+try:
+    from fast_plate_ocr import LicensePlateRecognizer
+    FAST_OCR = True
+except Exception:
+    FAST_OCR = False
+
+PTESS = False
+if not FAST_OCR:
+    try:
+        import pytesseract
+        PTESS = True
+    except Exception:
+        PTESS = False
+
+# ---------- UTILITIES ----------
+def clean_text(t: str) -> str:
+    if not t:
+        return ""
+    t = t.upper().replace(" ", "").replace("|", "1")
+    return ''.join(ch for ch in t if ch.isalnum())
+
+def iou(a, b):
+    x1 = max(a[0], b[0]); y1 = max(a[1], b[1])
+    x2 = min(a[2], b[2]); y2 = min(a[3], b[3])
+    iw = max(0, x2-x1); ih = max(0, y2-y1)
+    inter = iw * ih
+    if inter == 0: return 0.0
+    areaA = (a[2]-a[0])*(a[3]-a[1])
+    areaB = (b[2]-b[0])*(b[3]-b[1])
+    return inter / float(areaA + areaB - inter)
+
+def encode_base64_jpg(img):
+    _, buf = cv2.imencode(".jpg", img, [int(cv2.IMWRITE_JPEG_QUALITY), 75])
+    return "data:image/jpeg;base64," + base64.b64encode(buf).decode("utf-8")
+
+# ---------- OCR ----------
+def pytesseract_ocr(crop_bgr):
+    if not PTESS:
+        return "", 0.0
+    try:
+        gray = cv2.cvtColor(crop_bgr, cv2.COLOR_BGR2GRAY)
+        gray = cv2.bilateralFilter(gray, 9, 75, 75)
+        gray = cv2.adaptiveThreshold(gray, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 11, 2)
+        h, w = gray.shape[:2]
+        scale = max(1.0, 200.0 / max(w, h))
+        gray = cv2.resize(gray, (int(w*scale), int(h*scale)), interpolation=cv2.INTER_CUBIC)
+        config = r'-c tessedit_char_whitelist=ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 --psm 7'
+        text = pytesseract.image_to_string(gray, config=config)
+        text = clean_text(text)
+        conf = 0.6 if len(text) >= 4 else 0.3
+        return text, conf
+    except Exception:
+        return "", 0.0
+
+def run_ocr_sync(crop_bgr):
+    if FAST_OCR:
+        try:
+            rgb = cv2.cvtColor(crop_bgr, cv2.COLOR_BGR2RGB)
+            ocr = LicensePlateRecognizer("cct-xs-v1-global-model")
+            out = ocr.run(rgb)
+            text = ""
+            conf = 0.0
+            if isinstance(out, dict):
+                text = out.get("text", "") or out.get("plate", "")
+                conf = float(out.get("confidence", 0.0))
+            elif isinstance(out, list) and out:
+                r = out[0]
+                if isinstance(r, dict):
+                    text = r.get("text", "")
+                    conf = float(r.get("confidence", 0.0))
+                elif isinstance(r, str):
+                    text = r
+            return clean_text(text), conf
+        except Exception as e:
+            print("[OCR FAST ERROR]", e)
+    return pytesseract_ocr(crop_bgr)
+
+# ---------- OCR Worker ----------
+OCRJob = namedtuple("OCRJob", ["box","crop","ts"])
+class OCRWorker(threading.Thread):
+    def __init__(self):
+        super().__init__(daemon=True)
+        self.queue = deque()
+        self.lock = threading.Lock()
+        self.cache = []
+        self.running = True
+    def submit(self, box, crop):
+        with self.lock:
+            self.queue.append(OCRJob(list(box), crop.copy(), time.time()))
+    def run(self):
+        while self.running:
+            job = None
+            with self.lock:
+                if self.queue:
+                    job = self.queue.popleft()
+            if job is None:
+                time.sleep(0.01)
+                continue
+            txt, conf = run_ocr_sync(job.crop)
+            rec = {"box": job.box, "text": txt, "conf": conf, "ts": job.ts}
+            with self.lock:
+                self.cache.append(rec)
+                # keep only recent
+                now = time.time()
+                self.cache = [r for r in self.cache if now - r["ts"] <= 3.0]
+    def get_recent(self):
+        with self.lock:
+            return list(self.cache)
+    def stop(self):
+        self.running = False
+
+ocr_worker = OCRWorker()
+ocr_worker.start()
+
+# ---------- REPORT ----------
+def write_report_row(tid, tinfo, b64_img):
+    date = datetime.now().strftime("%Y-%m-%d")
+    dirp = os.path.join(REPORTS_ROOT, date); os.makedirs(dirp, exist_ok=True)
+    report_file = os.path.join(dirp, "report.html")
+    plate = tinfo.get("plate_text", "") or "Not Detected"
+    tin = time.strftime("%H:%M:%S", time.localtime(tinfo["first_seen"]))
+    tout = time.strftime("%H:%M:%S", time.localtime(tinfo["last_seen"]))
+    dur = int(tinfo["last_seen"] - tinfo["first_seen"])
+    if not os.path.exists(report_file):
+        with open(report_file,"w") as f:
+            f.write(f"""<!doctype html><html><head><meta charset="utf-8">
+<style>body{{font-family:Arial;margin:20px}}table{{width:100%;border-collapse:collapse}}th,td{{padding:8px 10px;border-bottom:1px solid #eee;text-align:left}}th{{background:#111;color:#fff}}img.thumb{{height:{THUMB_HEIGHT}px;border-radius:6px}}</style>
+</head><body><h2>ANPR Report — {date}</h2><table><tr><th>ID</th><th>Plate</th><th>Vehicle</th><th>In</th><th>Out</th><th>Duration</th></tr>""")
+    with open(report_file, "a") as f:
+        f.write("<tr>")
+        f.write(f"<td>{tid}</td>")
+        f.write(f"<td>{plate}</td>")
+        if b64_img:
+            f.write(f"<td><img class='thumb' src='{b64_img}'></td>")
+        else:
+            f.write("<td>No image</td>")
+        f.write(f"<td>{tin}</td><td>{tout}</td><td>{dur}s</td></tr>\n")
+
+# ---------- TRACKER (light) ----------
+tracks = {}
+_next_tid = 0
+track_lock = threading.Lock()
+
+def create_track(box):
+    global _next_tid
+    tid = _next_tid; _next_tid += 1
+    tracks[tid] = {
+        "box": list(box),
+        "first_seen": time.time(),
+        "last_seen": time.time(),
+        "plate_text": "",
+        "plate_votes": deque(maxlen=6)
+    }
+    return tid
+
+def update_track(tid, box):
+    tracks[tid]["box"] = list(box)
+    tracks[tid]["last_seen"] = time.time()
+
+def remove_track(tid):
+    if tid in tracks: del tracks[tid]
+
+def match_dets_to_tracks(dboxes):
+    if not tracks: return [], list(range(len(dboxes)))
+    pairs = []
+    for di, db in enumerate(dboxes):
+        for tid, t in tracks.items():
+            s = iou(db, t["box"])
+            if s >= 0.25:
+                pairs.append((s, di, tid))
+    pairs.sort(reverse=True)
+    used_d, used_t = set(), set()
+    matches = []
+    for s, di, tid in pairs:
+        if di in used_d or tid in used_t: continue
+        matches.append((di, tid))
+        used_d.add(di); used_t.add(tid)
+    new_det = [i for i in range(len(dboxes)) if i not in used_d]
+    return matches, new_det
+
+# ---------- Load models (print confirmation) ----------
+print("[INFO] Loading models...")
+vehicle_model = YOLO(VEHICLE_MODEL, task="detect")
+print(f"[INFO] Vehicle model loaded: {VEHICLE_MODEL}")
+plate_model = YOLO(PLATE_MODEL, task="detect")
+print(f"[INFO] Plate model loaded: {PLATE_MODEL}")
+
+# ---------- Camera (RGB888, lower res) ----------
+picam2 = Picamera2()
+config = picam2.create_preview_configuration(
+    main={"format": "RGB888", "size": (CAM_WIDTH, CAM_HEIGHT)}
+)
+picam2.configure(config)
+picam2.start()
+time.sleep(0.2)
+def get_frame_bgr():
+    f = picam2.capture_array()
+    if f is None: return None
+    return cv2.cvtColor(f, cv2.COLOR_RGB2BGR)
+
+# ---------- Main loop ----------
+print("[INFO] Starting ANPR (optimized). Press 'q' to quit.")
+fps_buf = deque(maxlen=20)
+try:
+    while True:
+        t_frame_start = time.time()
+        frame = get_frame_bgr()
+        if frame is None:
+            time.sleep(0.01); continue
+
+        # VEHICLE detection
+        t0 = time.time()
+        veh_res = vehicle_model.predict(frame, conf=DETECTION_CONF_VEH, imgsz=IMG_SIZE, verbose=False)[0]
+        t_veh = (time.time() - t0) * 1000.0
+
+        det_boxes = []
+        # parse detections, get xyxy and conf
+        for b in veh_res.boxes:
+            x1,y1,x2,y2 = map(int, b.xyxy[0])
+            conf = float(b.conf[0]) if hasattr(b, "conf") else 0.0
+            w,h = x2-x1, y2-y1
+            area = w*h
+            ar = float(w)/float(h) if h>0 else 0
+            # heuristics: area and aspect ratio and confidence
+            if area < MIN_VEH_AREA: continue
+            if ar < MIN_VEH_AR or ar > MAX_VEH_AR: continue
+            if conf < DETECTION_CONF_VEH: continue
+            det_boxes.append(((x1,y1,x2,y2), conf))
+
+        # sort by confidence and keep top-K before suppression
+        det_boxes = sorted(det_boxes, key=lambda x: x[1], reverse=True)[:20]
+        boxes_only = [d[0] for d in det_boxes]
+
+        # stronger duplicate suppression
+        filtered = []
+        for b in boxes_only:
+            if all(iou(b, f) < 0.5 for f in filtered):
+                filtered.append(b)
+        det_boxes = filtered[:MAX_BOXES_DRAW]
+
+        # TRACKING match & update
+        with track_lock:
+            matches, new_det = match_dets_to_tracks(det_boxes)
+            for di, tid in matches:
+                update_track(tid, det_boxes[di])
+            for di in new_det:
+                create_track(det_boxes[di])
+
+            # handle exit and report write (simple)
+            now = time.time()
+            to_remove = []
+            for tid, tinfo in list(tracks.items()):
+                if now - tinfo["last_seen"] > 3.0:
+                    # write report row with thumb
+                    x1,y1,x2,y2 = tinfo["box"]
+                    crop = frame[y1:y2, x1:x2].copy() if frame is not None else None
+                    if crop is not None and crop.size>0:
+                        h,w = crop.shape[:2]
+                        scale = THUMB_HEIGHT/float(h) if h>0 else 1.0
+                        new_w = max(1,int(w*scale))
+                        thumb = cv2.resize(crop, (new_w, THUMB_HEIGHT), interpolation=cv2.INTER_AREA)
+                        b64 = encode_base64_jpg(thumb)
+                    else:
+                        b64 = ""
+                    write_report_row(tid, tinfo, b64)
+                    to_remove.append(tid)
+            for tid in to_remove: remove_track(tid)
+
+        # PLATE detection (run once per frame but smaller workload)
+        t0 = time.time()
+        plate_res = plate_model.predict(frame, conf=DETECTION_CONF_PLT, imgsz=IMG_SIZE, verbose=False)[0]
+        t_plate = (time.time() - t0) * 1000.0
+
+        # for each plate box: try sync OCR and associate with a track
+        for pb in plate_res.boxes:
+            x1,y1,x2,y2 = map(int, pb.xyxy[0])
+            w,h = x2-x1, y2-y1
+            if w < 30 or h < 10: continue
+            crop = frame[y1:y2, x1:x2].copy()
+            if crop is None or crop.size==0: continue
+
+            # synchronous OCR (quick)
+            txt, conf = run_ocr_sync(crop)
+            if txt:
+                print(f"[OCR SYNC] text='{txt}' conf={conf:.2f}")
+
+            # find best matching vehicle track and save votes
+            with track_lock:
+                best_tid = None; best_s = 0.0
+                for tid, tinfo in tracks.items():
+                    s = iou(tinfo["box"], (x1,y1,x2,y2))
+                    if s > best_s:
+                        best_s = s; best_tid = tid
+                if best_tid is not None and best_s >= 0.35 and txt:
+                    tracks[best_tid]["plate_votes"].append(txt)
+                    votes = list(tracks[best_tid]["plate_votes"])
+                    if len(votes) >= 2 and len(set(votes[-2:])) == 1:
+                        tracks[best_tid]["plate_text"] = votes[-1]
+
+            # async OCR worker
+            ocr_worker.submit((x1,y1,x2,y2), crop)
+
+        # DRAW results (limited)
+        vis = frame.copy()
+        with track_lock:
+            for tid, tinfo in list(tracks.items()):
+                x1,y1,x2,y2 = tinfo["box"]
+                cv2.rectangle(vis, (x1,y1), (x2,y2), (0,200,0), 2)
+                if tinfo.get("plate_text"):
+                    cv2.putText(vis, tinfo["plate_text"], (x1, min(vis.shape[0]-10, y2+20)),
+                                cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0,255,255), 2, cv2.LINE_AA)
+
+        # FPS and timing overlay
+        frame_ms = (time.time() - t_frame_start) * 1000.0
+        fps = 1000.0 / frame_ms if frame_ms > 0 else 0.0
+        fps_buf.append(fps)
+        avg_fps = sum(fps_buf)/len(fps_buf) if fps_buf else fps
+        cv2.putText(vis, f"FPS:{avg_fps:.1f} V:{t_veh:.0f}ms P:{t_plate:.0f}ms", (8,24),
+                    cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0,255,0), 2)
+
+        cv2.imshow("ANPR (optimized)", vis)
+        if cv2.waitKey(1) & 0xFF == ord("q"):
+            break
+
+except KeyboardInterrupt:
+    pass
+
+finally:
+    print("[INFO] stopping...")
+    ocr_worker.stop()
+    picam2.stop()
+    cv2.destroyAllWindows()
+    # flush tracks to report
+    with track_lock:
+        for tid, tinfo in tracks.items():
+            x1,y1,x2,y2 = tinfo["box"]
+            frame_now = get_frame_bgr()
+            if frame_now is not None:
+                crop = frame_now[y1:y2, x1:x2]
+                if crop is not None and crop.size>0:
+                    h,w = crop.shape[:2]
+                    scale = THUMB_HEIGHT/float(h) if h>0 else 1.0
+                    thumb = cv2.resize(crop, (max(1,int(w*scale)), THUMB_HEIGHT))
+                    b64 = encode_base64_jpg(thumb)
+                else:
+                    b64 = ""
+            else:
+                b64 = ""
+            write_report_row(tid, tinfo, b64)
+    print("[INFO] done.")

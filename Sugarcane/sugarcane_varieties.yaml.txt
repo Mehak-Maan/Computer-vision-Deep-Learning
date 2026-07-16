@@ -1,0 +1,23 @@
+path: dataset
+
+train: images/train
+val: images/val
+
+names:
+  0: CoJ_84
+  1: SPF_93
+  2: NSG_59
+  3: YTFG_236
+  4: CPF_253
+  5: CPF_252
+  6: CPF_251
+  7: CPF_250
+  8: CPF_249
+  9: CPF_248
+  10: CPF_247
+  11: CPF_246
+  12: SPF_213
+  13: SPF_234
+  14: CPF_237
+  15: CPF_77_400
+  16: HSF_240
